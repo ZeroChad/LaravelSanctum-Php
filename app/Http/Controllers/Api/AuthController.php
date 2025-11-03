@@ -11,7 +11,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-    public function __contruct()
+    public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }  
@@ -32,7 +32,6 @@ class AuthController extends Controller
                 'success' => false,
                 'errors' => $validator->errors()], 422);
         }
-    }
 
     $user = User::create([
         'email' => $request->email,
@@ -42,12 +41,12 @@ class AuthController extends Controller
         'role' => $request->role,
         'sex' => $request->sex,
         'birthday' => $request->birthday,
-    ]):
+    ]);
 
-    $token = JWTauth::fromUser($user);
+    $token = JWTAuth::fromUser($user);
 
     return response()->json([
-        'sucess' => true,
+        'success' => true,
         'message' => 'User registered successfully',
         'user' => [
             'id' => $user->id,
@@ -57,9 +56,11 @@ class AuthController extends Controller
             'role' => $user->role,
             'sex' => $user->sex,
             'birthday' => $user->birthday->format('Y-m-d'),
-            'age' => $user->age
+            'age' => $user->age,
             'date_joined' => $user->created_at->format('Y-m-d H:i:s'),
         ],
         'access' => $token,
     ], 201);
 }
+
+public function Login(Request $request)
