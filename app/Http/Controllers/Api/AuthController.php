@@ -18,7 +18,7 @@ class AuthController extends Controller
     
     public function register(Request $request)
     {
-        validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
             'first_name' => 'required|string|max:255',
@@ -27,5 +27,10 @@ class AuthController extends Controller
             'sex' => 'required|in:male,female,other',
             'birthday' => 'required|date|before:today',
         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()], 422);
+        }
     }
 }
