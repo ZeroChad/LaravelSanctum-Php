@@ -33,4 +33,33 @@ class AuthController extends Controller
                 'errors' => $validator->errors()], 422);
         }
     }
+
+    $user = User::create([
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'first_name' => $request->first_name,
+        'last_name' => $request->last_name,
+        'role' => $request->role,
+        'sex' => $request->sex,
+        'birthday' => $request->birthday,
+    ]):
+
+    $token = JWTauth::fromUser($user);
+
+    return response()->json([
+        'sucess' => true,
+        'message' => 'User registered successfully',
+        'user' => [
+            'id' => $user->id,
+            'email' => $user->email,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'role' => $user->role,
+            'sex' => $user->sex,
+            'birthday' => $user->birthday->format('Y-m-d'),
+            'age' => $user->age
+            'date_joined' => $user->created_at->format('Y-m-d H:i:s'),
+        ],
+        'access' => $token,
+    ], 201);
 }
