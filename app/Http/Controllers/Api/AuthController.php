@@ -138,4 +138,16 @@ class AuthController extends Controller
             'message' => 'Successfully logged out'
         ]);
     }
+    
+    public function refresh()
+    {
+        $token = auth()->refresh();
+
+        return response()->json([
+            'success' => true,
+            'access' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60
+        ]);
+    }
  }
