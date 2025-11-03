@@ -64,3 +64,23 @@ class AuthController extends Controller
 }
 
 public function Login(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'email' => 'required|email',
+        'password' => 'required|string|min:8',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'errors' => $validator->errors()], 422);
+    }
+    $credentials = $request->only('email', 'password');
+
+    if (!token = auth()->attempt($credentials)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid email or password'], 401);
+    }
+}
+}
