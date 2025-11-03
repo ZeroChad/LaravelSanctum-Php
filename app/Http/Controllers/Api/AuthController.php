@@ -107,4 +107,35 @@ class AuthController extends Controller
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
     }
+
+    public function me()
+    {
+        $user = auth()->user();
+
+        return response()->json([
+            'success' => true,
+            'user' => [
+                'id' => $user->id,
+                'email' => $user->email,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'role' => $user->role,
+                'sex' => $user->sex,
+                'birthday' => $user->birthday->format('Y-m-d'),
+                'age' => $user->age,
+                'date_joined' => $user->created_at->format('Y-m-d H:i:s'),
+            ]
+        ]);
+    }
+
+
+    public function logout()
+    {
+        auth()->logout();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully logged out'
+        ]);
+    }
  }
