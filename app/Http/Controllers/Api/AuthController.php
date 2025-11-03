@@ -63,24 +63,48 @@ class AuthController extends Controller
     ], 201);
 }
 
-public function Login(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'email' => 'required|email',
-        'password' => 'required|string|min:8',
-    ]);
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|string|min:8',
+        ]);
 
-    if ($validator->fails()) {
-        return response()->json([
-            'success' => false,
-            'errors' => $validator->errors()], 422);
-    }
-    $credentials = $request->only('email', 'password');
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
-    if (!token = auth()->attempt($credentials)) {
+        $credentials = $request->only('email', 'password'); 
+
+        if (!$token = auth()->attempt($credentials)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid email or password'
+            ], 401);
+        }
+
+        $user = auth()->user();
+
         return response()->json([
-            'success' => false,
-            'message' => 'Invalid email or password'], 401);
+            'success' => true,
+            'message' => 'Login successful',
+            'user' => [
+                'id' => $user->id,
+                'email' => $user->email,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'role' => $user->role,
+                'sex' => $user->sex,
+                'birthday' => $user->birthday->format('Y-m-d'),
+                'age' => $user->age,
+                'date_joined' => $user->created_at->format('Y-m-d H:i:s'),
+            ],
+            'access' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60
+        ]);
     }
-}
-}
+ }
